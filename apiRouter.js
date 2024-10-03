@@ -44,13 +44,55 @@ apiRouter.post('/user/login', (req, res) => {
 })
 
 apiRouter.get('/user/info', verifyToken, (req, res) => {
-  // 假设用户信息
+  const { name } = req.query;
+  if(!name) {
+    res.send({
+      code: 400,
+      message: '获取用户信息失败',
+      data: null
+    });
+  }
+  const getRoutes = (name) => {
+    // 根据name拿到roleName
+    const { roleName } = userList.find(n => n.username == name);
+    const roleArr = roleName.map(n => {
+      return n.name;
+    })
+    // 根据所有的角色拿到permissionId
+    let idArr = [];
+    roleList.forEach(n => {
+      if(roleArr.includes(n.name)) {
+        idArr = idArr.concat(n.permissionId);
+      }
+    })
+    idArr = [...new Set(idArr)];
+    return idArr;
+  }
+  const idArr = getRoutes(name);
+  const routes = [];
+  const buttons = [];
+  const getAuthData = (tree, idArr, routes, buttons) => {
+    tree.forEach(n => {
+      const { id, children, level, code } = n;
+      if(idArr.includes(id) && level != 1) {
+        if(level == 4) buttons.push(code);
+        else routes.push(code);
+      }
+      if(children.length) {
+        getAuthData(children, idArr, routes, buttons);
+      }
+    })
+  }
+  getAuthData(treeData, idArr, routes, buttons);
+  const { id, name: cnName, username } = userList.find(n => n.username == name);
   const userInfo = {
-    id: 1,
-    name: 'junjie',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
-  };
-
+    id,
+    cnName,
+    username,
+    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    routes,
+    buttons
+  }
   // 返回成功的响应
   res.send({
     code: 200,

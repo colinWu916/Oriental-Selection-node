@@ -375,7 +375,7 @@ const roleList = [
     name: 'SuperAdmin',
     createTime: '2024/10/2 13:43:04',
     updateTime: '2024/10/2 13:43:04',
-    permissionId: []
+    permissionId: [7, 8, 9, 10, 11, 14, 22, 23, 24, 25, 26, 27]
   }
 ]
 
