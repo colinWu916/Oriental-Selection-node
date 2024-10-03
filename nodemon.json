@@ -1,0 +1,6 @@
+{
+  "watch": ["apiRouter.js", "app.js"],
+  "ext": "js,json",
+  "exec": "node app.js",
+  "ignore": ["node_modules/*"]
+}
